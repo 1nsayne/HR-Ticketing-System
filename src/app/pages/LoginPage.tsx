@@ -48,8 +48,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg border-none">
+    <div className="min-h-screen flex items-center justify-center relative bg-gray-50">
+      {/* Honeycomb SVG background */}
+      <div className="honeycomb-bg-svg">
+        <svg className="honeycomb-svg honeycomb-svg-top" viewBox="0 0 220 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="honeycomb-top" patternUnits="userSpaceOnUse" width="60" height="52" patternTransform="scale(1)">
+              <polygon points="30,5 55,17.5 55,37.5 30,50 5,37.5 5,17.5" fill="none" stroke="#b0bf00" strokeWidth="1.5" opacity="0.8"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#honeycomb-top)" />
+        </svg>
+        <svg className="honeycomb-svg honeycomb-svg-bottom" viewBox="0 0 220 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="honeycomb-bottom" patternUnits="userSpaceOnUse" width="60" height="52" patternTransform="scale(1)">
+              <polygon points="30,5 55,17.5 55,37.5 30,50 5,37.5 5,17.5" fill="none" stroke="#b0bf00" strokeWidth="1.5" opacity="0.8"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#honeycomb-bottom)" />
+        </svg>
+      </div>
+      <Card className="w-full max-w-md shadow-lg border-none login-gradient relative z-10">
         <CardHeader className="space-y-4 text-center">
           <div className="flex justify-center">
             <img 
@@ -59,10 +78,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <CardTitle className="text-2xl">HR Ticketing System</CardTitle>
-            <CardDescription className="mt-2">
-              Sign in to access your account
-            </CardDescription>
+            <CardTitle className="text-2xl font-bold">HUMAN RESOURCE<br/>TICKETING</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
@@ -72,14 +88,13 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="text"
-                placeholder="Enter your employee ID or email"
+                placeholder="Enter your Employee ID or Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="h-11"
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -92,21 +107,17 @@ export default function LoginPage() {
                 className="h-11"
               />
             </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <a href="#" className="text-blue-600 hover:text-blue-700 hover:underline">
-                Forgot Password?
-              </a>
-            </div>
-
             <Button 
               type="submit" 
               style={{ backgroundColor: 'rgb(176, 191, 0)', borderColor: 'rgb(176, 191, 0)' }}
-              className="w-full h-11 hover:bg-opacity-90 text-white"
+              className="w-full h-11 hover:bg-opacity-90 text-white mt-2"
             >
               Sign In
             </Button>
-
+            <div className="text-center text-xs text-gray-500 mt-2">login via</div>
+            <div className="google-btn">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" width={24} height={24} />
+            </div>
             {/* Demo toggle for testing */}
             <div className="pt-4 border-t border-gray-200">
               <p className="text-xs text-gray-600 text-center mb-2">Demo Mode - Select Role:</p>
@@ -117,27 +128,21 @@ export default function LoginPage() {
                   onClick={() => setSelectedRole("employee")}
                   className="flex-1"
                   size="sm"
-                >
-                  Employee
-                </Button>
+                >Employee</Button>
                 <Button
                   type="button"
                   variant={selectedRole === "hr" ? "default" : "outline"}
                   onClick={() => setSelectedRole("hr")}
                   className="flex-1"
                   size="sm"
-                >
-                  HR
-                </Button>
+                >HR</Button>
                 <Button
                   type="button"
                   variant={selectedRole === "admin" ? "default" : "outline"}
                   onClick={() => setSelectedRole("admin")}
                   className="flex-1"
                   size="sm"
-                >
-                  Admin
-                </Button>
+                >Admin</Button>
               </div>
             </div>
           </form>

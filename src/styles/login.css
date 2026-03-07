@@ -1,0 +1,68 @@
+/* Honeycomb background utility */
+.honeycomb-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.honeycomb {
+  fill: none;
+  stroke: #b0bf00;
+  stroke-width: 4;
+  opacity: 0.25;
+}
+
+/* Gradient for login card */
+.login-gradient {
+  background: linear-gradient(180deg, #fff 60%, #e6f0a3 100%);
+}
+
+/* Google button styling */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(176,191,0,0.15);
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.google-btn:hover {
+  box-shadow: 0 4px 16px rgba(176,191,0,0.25);
+}
+
+/* Honeycomb SVG background utility */
+.honeycomb-bg-svg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.honeycomb-svg {
+  position: absolute;
+  width: 220px;
+  height: 320px;
+  opacity: 0.25;
+}
+
+.honeycomb-svg-top {
+  top: 0;
+  left: 0;
+}
+
+.honeycomb-svg-bottom {
+  bottom: 0;
+  right: 0;
+}
