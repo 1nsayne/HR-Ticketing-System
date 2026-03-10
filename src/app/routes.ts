@@ -1,10 +1,8 @@
 import { createBrowserRouter } from "react-router";
-import LoginPage from "./pages/LoginPage";
-import EmployeeDashboard from "./pages/EmployeeDashboard";
-import CreateTicket from "./pages/CreateTicket";
-import AdminDashboard from "./pages/AdminDashboard";
-import HRPage from "./pages/HRPage";
-import TicketDetail from "./pages/TicketDetail";
+import { LoginPage } from "./features/auth";
+import { EmployeeDashboard, CreateTicket, TicketDetail } from "./features/employee";
+import { HRPage, HREmployees } from "./features/hr";
+import { AdminDashboard } from "./features/admin";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +20,10 @@ export const router = createBrowserRouter([
   {
     path: "/hr",
     Component: HRPage,
+  },
+  {
+    path: "/hr/employees",
+    Component: HREmployees,
   },
   {
     path: "/admin",

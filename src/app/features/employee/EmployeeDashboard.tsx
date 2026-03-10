@@ -1,9 +1,9 @@
 import { Link } from "react-router";
-import { useAuth } from "../contexts/AuthContext";
-import { EmployeeNavbar } from "../components/EmployeeNavbar";
-import { KPICard } from "../components/KPICard";
-import { StatusBadge } from "../components/StatusBadge";
-import { Button } from "../components/ui/button";
+import { useAuth } from "../../contexts/AuthContext";
+import { EmployeeNavbar } from "../../components/EmployeeNavbar";
+import { KPICard } from "../../components/KPICard";
+import { StatusBadge } from "../../components/StatusBadge";
+import { Button } from "../../components/ui/button";
 import {
   Table,
   TableBody,
@@ -11,9 +11,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../components/ui/table";
+} from "../../components/ui/table";
 import { Ticket, FolderOpen, CheckCircle, PlusCircle } from "lucide-react";
-import { mockTickets } from "../data/mockData";
+import { mockTickets } from "../../data/mockData";
 
 // --- Honeycomb Pattern Component ---
 const HoneycombPattern = ({ className }: { className?: string }) => (
@@ -156,3 +156,4 @@ export default function EmployeeDashboard() {
     </div>
   );
 }
+
