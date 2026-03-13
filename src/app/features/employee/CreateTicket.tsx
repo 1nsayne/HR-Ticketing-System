@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
-import { EmployeeNavbar } from "../../components/EmployeeNavbar";
+import { EmployeeSidebar } from "../../components/EmployeeSidebar";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -46,15 +46,14 @@ export default function CreateTicket() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      
-      <EmployeeNavbar />
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900">Create New Ticket</h1>
-          <p className="text-gray-600 mt-1">Submit a request to HR</p>
-        </div>
+    <div className="flex min-h-screen bg-gray-50">
+      <EmployeeSidebar />
+      <main className="flex-1">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-semibold text-gray-900">Create New Ticket</h1>
+            <p className="text-gray-600 mt-1">Submit a request to HR</p>
+          </div>
 
         <Card className="shadow-sm border-gray-200">
           <CardHeader className="border-b border-gray-200">
@@ -217,6 +216,7 @@ export default function CreateTicket() {
           </CardContent>
         </Card>
       </div>
+      </main>
     </div>
   );
 }

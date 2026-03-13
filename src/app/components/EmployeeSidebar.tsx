@@ -2,36 +2,31 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { cn } from "../components/ui/utils";
 import { 
   LayoutDashboard, 
-  Ticket, 
-  Users, 
-  Settings,
-  Network,
+  Plus,
   LogOut 
 } from "lucide-react";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "../components/ui/button";
 
-interface AdminSidebarProps {
+interface EmployeeSidebarProps {
   className?: string;
 }
 
-export function AdminSidebar({ className }: AdminSidebarProps) {
+export function EmployeeSidebar({ className }: EmployeeSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const navItems = [
-    { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/admin/tickets", label: "Tickets", icon: Ticket },
-    { path: "/admin/assignment-matrix", label: "Assignment Matrix", icon: Network },
-    { path: "/admin/employees", label: "Employees", icon: Users },
+    { path: "/employee", label: "Dashboard", icon: LayoutDashboard },
+    { path: "/employee/create-ticket", label: "Create Ticket", icon: Plus },
   ];
 
   return (
-    <div className={cn("w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0 flex flex-col z-40", className)}>
+    <div className={cn("w-64 bg-white border-r border-gray-200 h-screen sticky top-0 flex flex-col", className)}>
       {/* Logo Header */}
-      <div className="p-6 border-b border-gray-200 shrink-0">
+      <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <img src={logo} alt="Logo" className="w-8 h-8 rounded-lg" />
           <span className="font-semibold text-lg">DMTS</span>
@@ -39,11 +34,11 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 px-4 py-6 space-y-2 overflow-hidden">
+      <nav className="flex-1 px-4 py-6 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          
+
           return (
             <Link
               key={item.path}

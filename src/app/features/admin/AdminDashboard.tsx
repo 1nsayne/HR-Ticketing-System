@@ -61,25 +61,9 @@ export default function AdminDashboard() {
     <div className="flex min-h-screen bg-gray-50 relative overflow-hidden">
       <AdminSidebar />
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 ml-64 p-0 overflow-auto">
         <div className="max-w-7xl mx-auto px-8 py-8">
-          {/* Header with User Info and Logout */}
-          <div className="flex justify-end items-center mb-8">
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.role.toUpperCase()}</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/")}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
+
 
           <div className="mb-8">
             <h1 className="text-3xl font-semibold text-gray-900">Admin Dashboard</h1>
