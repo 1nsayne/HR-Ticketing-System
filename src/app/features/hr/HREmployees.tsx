@@ -27,7 +27,7 @@ export default function HREmployees() {
               <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">ID</th>
               <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Name</th>
               <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Department</th>
-              <th className="px4 text-xs font-6 py--bold text-gray-400 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Email</th>
               <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
             </tr>
           </thead>

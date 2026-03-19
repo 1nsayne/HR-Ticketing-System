@@ -5,7 +5,6 @@ import {
   Ticket, 
   Users, 
   Settings,
-  Network,
   LogOut 
 } from "lucide-react";
 import logo from "../../assets/logo.png";
@@ -24,7 +23,6 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
   const navItems = [
     { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { path: "/admin/tickets", label: "Tickets", icon: Ticket },
-    { path: "/admin/assignment-matrix", label: "Assignment Matrix", icon: Network },
     { path: "/admin/employees", label: "Employees", icon: Users },
   ];
 
