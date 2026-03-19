@@ -105,7 +105,7 @@ export default function AdminDashboard() {
                 <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 dark:from-white to-gray-700 dark:to-gray-400 bg-clip-text text-transparent mb-3">
                   Admin Dashboard
                 </h1>
-                <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl">
+                <p className="text-xl text-gray-700 dark:text-gray-200 max-w-2xl">
                   Analytics and insights for HR ticketing system. Monitor performance and trends.
                 </p>
               </div>
@@ -237,7 +237,7 @@ export default function AdminDashboard() {
                 <BarChart3 className="w-7 h-7" />
                 Analytics Overview
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-8">Visual insights into your ticketing performance</p>
+<p className="text-gray-700 dark:text-gray-200 mb-8">Visual insights into your ticketing performance</p>
               <DashboardGraphs />
             </div>
           </div>

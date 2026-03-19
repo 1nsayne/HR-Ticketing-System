@@ -112,10 +112,11 @@ export default function TicketDetail() {
   const canUpdateStatus = hasPermission("update_ticket_status");
   const canReassign = hasPermission("reassign_tickets");
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-      <div className="bg-white border-b border-gray-200">
+
+      <div className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -126,15 +127,15 @@ export default function TicketDetail() {
                 </Button>
               </Link>
               <div className="flex-1">
-                <h1 className="text-2xl font-semibold text-gray-900">{ticket.id}</h1>
-                <p className="text-gray-600 text-sm mt-0.5">{ticket.subject}</p>
+                <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{ticket.id}</h1>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-0.5">{ticket.subject}</p>
                 {/* Assigned HR Display */}
                 {ticket.assignedTo && (
                   <div className="flex items-center gap-2 mt-2">
                     <UserCheck className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       Assigned to:{" "}
-                      <span className="font-medium text-gray-900">{ticket.assignedTo}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{ticket.assignedTo}</span>
                     </span>
                     {disableAssignment && (
                       <span className="flex items-center gap-1 text-xs text-gray-500 ml-2">
@@ -397,8 +398,7 @@ export default function TicketDetail() {
                   )}
 
                   <Button 
-                    style={{ backgroundColor: 'rgb(176, 191, 0)', borderColor: 'rgb(176, 191, 0)' }}
-                    className="w-full hover:bg-opacity-90 text-white"
+className="w-full bg-blue-500 hover:bg-blue-600 text-white border border-blue-500"
                   >
                     Save Changes
                   </Button>

@@ -199,7 +199,7 @@ export default function AdminTickets() {
           {/* Tickets Table */}
           <div className="bg-white dark:bg-gray-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-              <h2 className="text-lg font-semibold dark:text-white">All Tickets ({filteredTickets.length})</h2>
+<h2 className="text-lg font-semibold text-gray-900 dark:text-white">All Tickets ({filteredTickets.length})</h2>
             </div>
             <Table>
               <TableHeader>

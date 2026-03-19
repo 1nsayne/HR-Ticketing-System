@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import { LoginPage } from "./features/auth";
 import { EmployeeDashboard, CreateTicket, TicketDetail } from "./features/employee";
-import { HRPage, HREmployees } from "./features/hr";
+import { HRPage } from "./features/hr";
 import { AdminTickets, AdminEmployees } from "./features/admin";
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -22,10 +22,11 @@ export const router = createBrowserRouter([
     path: "/hr",
     Component: HRPage,
   },
-  {
-    path: "/hr/employees",
-    Component: HREmployees,
-  },
+  // Removed HR/employees - using /admin/employees instead
+  // {
+  //   path: "/hr/employees",
+  //   Component: HREmployees,
+  // },
   {
     path: "/admin",
     Component: AdminDashboard,
@@ -34,7 +35,6 @@ export const router = createBrowserRouter([
     path: "/admin/tickets",
     Component: AdminTickets,
   },
-
   {
     path: "/admin/employees",
     Component: AdminEmployees,

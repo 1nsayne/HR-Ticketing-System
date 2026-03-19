@@ -16,7 +16,7 @@ export function HRSidebar({ className }: HRSidebarProps) {
 
   const navItems = [
     { path: "/hr", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/hr/employees", label: "Employees", icon: Users },
+    { path: "/admin/employees", label: "Employees", icon: Users }, // Redirected to Admin Employees
   ];
 
   return (
@@ -80,4 +80,3 @@ export function HRSidebar({ className }: HRSidebarProps) {
     </div>
   );
 }
-
