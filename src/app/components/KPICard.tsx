@@ -12,15 +12,15 @@ interface KPICardProps {
 
 export function KPICard({ title, value, icon: Icon, trend, color = "text-blue-600" }: KPICardProps) {
   return (
-    <Card className="border-none shadow-sm">
+    <Card className="border-none shadow-sm dark:bg-gray-950 dark:border-gray-800 dark:border">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <p className="text-sm text-gray-600">{title}</p>
-            <p className="text-3xl font-semibold">{value}</p>
-            {trend && <p className="text-xs text-gray-500">{trend}</p>}
+            <p className="text-sm text-gray-600 dark:text-gray-400">{title}</p>
+            <p className="text-3xl font-semibold dark:text-white">{value}</p>
+            {trend && <p className="text-xs text-gray-500 dark:text-gray-400">{trend}</p>}
           </div>
-          <div className={cn("p-3 rounded-lg bg-blue-50", color)}>
+          <div className={cn("p-3 rounded-lg bg-blue-50 dark:bg-gray-800", color)}>
             <Icon className="w-6 h-6" />
           </div>
         </div>

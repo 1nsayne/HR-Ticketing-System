@@ -22,7 +22,6 @@ import {
 } from "../../components/ui/dialog";
 import { 
   Search, 
-  Download, 
   LogOut, 
   Plus,
   MoreVertical,
@@ -140,18 +139,18 @@ export default function AdminEmployees() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Active</Badge>;
+        return <Badge className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900">Active</Badge>;
       case "on-leave":
-        return <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">On Leave</Badge>;
+        return <Badge className="bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900">On Leave</Badge>;
       case "inactive":
-        return <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100">Inactive</Badge>;
+        return <Badge className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Inactive</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 relative overflow-hidden">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
       <AdminSidebar />
 
       <div className="flex-1 ml-64 overflow-auto">
@@ -160,8 +159,8 @@ export default function AdminEmployees() {
 
           <div className="mb-8 flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-semibold text-gray-900">Employee Management</h1>
-              <p className="text-gray-600 mt-1">View and manage company employees</p>
+              <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Employee Management</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage company employees</p>
             </div>
             <Button onClick={() => setIsAddDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -170,10 +169,10 @@ export default function AdminEmployees() {
           </div>
 
           {/* Filter Bar */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="bg-white dark:bg-gray-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Search</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -181,13 +180,13 @@ export default function AdminEmployees() {
                     placeholder="Search employees..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-10 pl-10 pr-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-10 pl-10 pr-4 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Department</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
                 <Select value={filterDepartment} onValueChange={setFilterDepartment}>
                   <SelectTrigger className="h-10">
                     <SelectValue />
@@ -204,7 +203,7 @@ export default function AdminEmployees() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Status</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
                   <SelectTrigger className="h-10">
                     <SelectValue />
@@ -218,74 +217,69 @@ export default function AdminEmployees() {
                 </Select>
               </div>
 
-              <div className="flex items-end">
-                <Button variant="outline" className="w-full">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export List
-                </Button>
-              </div>
+
             </div>
           </div>
 
           {/* Employees Table */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold">All Employees ({filteredEmployees.length})</h2>
+          <div className="bg-white dark:bg-gray-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+              <h2 className="text-lg font-semibold dark:text-white">All Employees ({filteredEmployees.length})</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">ID</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Employee</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Department</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Position</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Join Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Manager</th>
+                  <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">ID</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Employee</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Department</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Position</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Join Date</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Manager</th>
                     <th className="px-6 py-4"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                   {filteredEmployees.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                      <td colSpan={8} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                         No employees found matching your filters.
                       </td>
                     </tr>
                   ) : (
                     filteredEmployees.map((employee) => (
-                      <tr key={employee.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={employee.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                         <td className="px-6 py-4">
-                          <span className="text-sm font-medium text-gray-900">{employee.id}</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">{employee.id}</span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">
                               {employee.name.charAt(0)}
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-900">{employee.name}</p>
-                              <p className="text-xs text-gray-500">{employee.email}</p>
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">{employee.name}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{employee.email}</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm text-gray-600">{employee.department}</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-300">{employee.department}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm text-gray-600">{employee.position}</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-300">{employee.position}</span>
                         </td>
                         <td className="px-6 py-4">
                           {getStatusBadge(employee.status)}
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
                             {new Date(employee.joinDate).toLocaleDateString()}
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm text-gray-600">{employee.manager}</span>
+                          <span className="text-sm text-gray-600 dark:text-gray-300">{employee.manager}</span>
                         </td>
                         <td className="px-6 py-4">
                           <Button variant="ghost" size="sm">

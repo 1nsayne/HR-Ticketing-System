@@ -7,9 +7,9 @@ interface PriorityBadgeProps {
 
 export function PriorityBadge({ priority, className }: PriorityBadgeProps) {
   const priorityConfig = {
-    low: { label: "Low", color: "bg-gray-100 text-gray-600" },
-    medium: { label: "Medium", color: "bg-yellow-100 text-yellow-700" },
-    high: { label: "High", color: "bg-red-100 text-red-700" },
+    low: { label: "Low", color: "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300" },
+    medium: { label: "Medium", color: "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300" },
+    high: { label: "High", color: "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300" },
   };
 
   const config = priorityConfig[priority];

@@ -12,23 +12,39 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "./ui/utils";
 import * as Recharts from "recharts";
 
+// Custom color palette
+const customColors = [
+  "#b0bf00", // Olive green
+  "#020e27", // Dark blue
+  "#6b1fad", // Velvet purple
+  "#3d0025", // Dark magenta
+  "#243b3b", // Dark gray-cyan
+];
+
+// Priority-specific colors matching badge semantics
+const priorityColors = {
+  low: "#6B7280", // Gray for low priority
+  medium: "#F59E0B", // Amber/Yellow for medium priority
+  high: "#EF4444", // Red for high priority
+};
+
 const chartConfigStatus: ChartConfig = {
-  open: { label: "Open" },
-  "in-progress": { label: "In Progress" },
-  waiting: { label: "Waiting" },
-  resolved: { label: "Resolved" },
-  closed: { label: "Closed" },
+  open: { label: "Open", color: customColors[0] },
+  "in-progress": { label: "In Progress", color: customColors[1] },
+  waiting: { label: "Waiting", color: customColors[2] },
+  resolved: { label: "Resolved", color: customColors[3] },
+  closed: { label: "Closed", color: customColors[4] },
 };
 
 const chartConfigPriority: ChartConfig = {
-  low: { label: "Low" },
-  medium: { label: "Medium" },
-  high: { label: "High" },
+  low: { label: "Low", color: priorityColors.low },
+  medium: { label: "Medium", color: priorityColors.medium },
+  high: { label: "High", color: priorityColors.high },
 };
 
 const chartConfigCategory: ChartConfig = {
-  "Employment Function": { label: "Employment" },
-  "Personal Function": { label: "Personal" },
+  "Employment Function": { label: "Employment", color: customColors[1] },
+  "Personal Function": { label: "Personal", color: customColors[3] },
 };
 
 export function DashboardGraphs() {
@@ -90,7 +106,7 @@ export function DashboardGraphs() {
               <Recharts.PieChart>
                 <Recharts.Pie data={statusData} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={60}>
                   {statusData.map((entry, index) => (
-                    <Recharts.Cell key={index} fill={`hsl(${index * 72}, 70%, 50%)`} />
+                    <Recharts.Cell key={index} fill={customColors[index % customColors.length]} />
                   ))}
                 </Recharts.Pie>
                 <ChartTooltip content={<ChartTooltipContent />} />
@@ -113,7 +129,14 @@ export function DashboardGraphs() {
                 <Recharts.XAxis dataKey="priority" />
                 <Recharts.YAxis />
                 <ChartTooltip />
-                <Recharts.Bar dataKey="count" />
+                <Recharts.Bar dataKey="count" fill={priorityColors.low}>
+                  {priorityData.map((entry, index) => (
+                    <Recharts.Cell 
+                      key={index} 
+                      fill={priorityColors[entry.priority as keyof typeof priorityColors] || priorityColors.low} 
+                    />
+                  ))}
+                </Recharts.Bar>
               </Recharts.BarChart>
             </Recharts.ResponsiveContainer>
           </ChartContainer>
@@ -133,7 +156,11 @@ export function DashboardGraphs() {
                 <Recharts.XAxis dataKey="category" />
                 <Recharts.YAxis />
                 <ChartTooltip />
-                <Recharts.Bar dataKey="count" />
+                <Recharts.Bar dataKey="count" fill={customColors[1]}>
+                  {categoryData.map((entry, index) => (
+                    <Recharts.Cell key={index} fill={customColors[index % customColors.length]} />
+                  ))}
+                </Recharts.Bar>
               </Recharts.BarChart>
             </Recharts.ResponsiveContainer>
           </ChartContainer>
@@ -153,7 +180,7 @@ export function DashboardGraphs() {
                 <Recharts.XAxis dataKey="date" />
                 <Recharts.YAxis />
                 <ChartTooltip />
-                <Recharts.Line type="monotone" dataKey="count" stroke="#8884d8" />
+                <Recharts.Line type="monotone" dataKey="count" stroke={customColors[0]} strokeWidth={2} />
               </Recharts.LineChart>
             </Recharts.ResponsiveContainer>
           </ChartContainer>

@@ -31,7 +31,6 @@ import {
   TrendingUp,
   BarChart3,
   PieChart,
-  Download,
 } from "lucide-react";
 import { mockTickets, categories } from "../data/mockData";
 import { DashboardGraphs } from "../components/DashboardGraphs";
@@ -94,7 +93,7 @@ export default function AdminDashboard() {
   }, [filterCategory, filterStatus, filterPriority, dateRange]);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-950">
       <AdminSidebar />
 
       <div className="flex-1 ml-64 p-0 overflow-auto">
@@ -103,19 +102,14 @@ export default function AdminDashboard() {
           <div className="mb-12">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
-                <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-3">
+                <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 dark:from-white to-gray-700 dark:to-gray-400 bg-clip-text text-transparent mb-3">
                   Admin Dashboard
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl">
+                <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl">
                   Analytics and insights for HR ticketing system. Monitor performance and trends.
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <Button size="lg" variant="outline">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Report
-                </Button>
-              </div>
+
             </div>
           </div>
 
@@ -152,11 +146,11 @@ export default function AdminDashboard() {
           </div>
 
           {/* Filters & Date Range */}
-          <Card className="shadow-lg border-0 mb-8 bg-white/80 backdrop-blur-sm">
+          <Card className="shadow-lg border-0 mb-8 bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm dark:border dark:border-gray-700">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Category</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
                   <Select value={filterCategory} onValueChange={setFilterCategory}>
                     <SelectTrigger className="h-11">
                       <SelectValue />
@@ -172,7 +166,7 @@ export default function AdminDashboard() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Status</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                   <Select value={filterStatus} onValueChange={setFilterStatus}>
                     <SelectTrigger className="h-11">
                       <SelectValue />
@@ -188,7 +182,7 @@ export default function AdminDashboard() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Priority</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
                   <Select value={filterPriority} onValueChange={setFilterPriority}>
                     <SelectTrigger className="h-11">
                       <SelectValue />
@@ -202,7 +196,7 @@ export default function AdminDashboard() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Date Range</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Date Range</label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="h-11 w-full justify-start text-left font-normal">
@@ -239,17 +233,17 @@ export default function AdminDashboard() {
           {/* Analytics Charts */}
           <div className="grid grid-cols-1 gap-8 mb-12">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                 <BarChart3 className="w-7 h-7" />
                 Analytics Overview
               </h2>
-              <p className="text-gray-600 mb-8">Visual insights into your ticketing performance</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">Visual insights into your ticketing performance</p>
               <DashboardGraphs />
             </div>
           </div>
 
           {/* Recent Tickets */}
-          <Card className="shadow-lg border-0">
+          <Card className="shadow-lg border-0 dark:bg-gray-950 dark:border dark:border-gray-800">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -268,7 +262,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {filteredTickets.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                   <Ticket className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>No tickets match your current filters</p>
                 </div>
@@ -288,17 +282,17 @@ export default function AdminDashboard() {
                     </TableHeader>
                     <TableBody>
                       {filteredTickets.map((ticket) => (
-                        <TableRow key={ticket.id} className="hover:bg-gray-50/50">
-                          <TableCell className="font-mono text-sm">{ticket.id}</TableCell>
-                          <TableCell className="font-medium">{ticket.employeeName}</TableCell>
-                          <TableCell className="text-sm">{ticket.category}</TableCell>
+                        <TableRow key={ticket.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
+                          <TableCell className="font-mono text-sm dark:text-gray-300">{ticket.id}</TableCell>
+                          <TableCell className="font-medium dark:text-gray-300">{ticket.employeeName}</TableCell>
+                          <TableCell className="text-sm dark:text-gray-300">{ticket.category}</TableCell>
                           <TableCell>
                             <PriorityBadge priority={ticket.priority} />
                           </TableCell>
                           <TableCell>
                             <StatusBadge status={ticket.status} />
                           </TableCell>
-                          <TableCell className="text-sm text-gray-500">
+                          <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                             {new Date(ticket.createdAt).toLocaleDateString()}
                           </TableCell>
                           <TableCell>

@@ -28,15 +28,15 @@ export default function EmployeeDashboard() {
   const resolvedCount = employeeTickets.filter((t) => t.status === "resolved" || t.status === "closed").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
       
       <EmployeeNavbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900">My Dashboard</h1>
-          <p className="text-gray-600 mt-1">Welcome back, {user.name}</p>
+          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">My Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome back, {user.name}</p>
         </div>
 
         {/* Summary Cards */}
@@ -75,41 +75,41 @@ export default function EmployeeDashboard() {
         </div>
 
         {/* Tickets Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold">My Tickets</h2>
-            <p className="text-sm text-gray-600 mt-1">View and track your submitted requests</p>
+        <div className="bg-white dark:bg-gray-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Tickets</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">View and track your submitted requests</p>
           </div>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Ticket ID</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Assigned To</TableHead>
-                <TableHead>Last Updated</TableHead>
-                <TableHead></TableHead>
+              <TableRow className="dark:border-gray-700">
+                <TableHead className="dark:text-gray-300">Ticket ID</TableHead>
+                <TableHead className="dark:text-gray-300">Category</TableHead>
+                <TableHead className="dark:text-gray-300">Subject</TableHead>
+                <TableHead className="dark:text-gray-300">Status</TableHead>
+                <TableHead className="dark:text-gray-300">Assigned To</TableHead>
+                <TableHead className="dark:text-gray-300">Last Updated</TableHead>
+                <TableHead className="dark:text-gray-300"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {employeeTickets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={7} className="text-center py-8 text-gray-500 dark:text-gray-400">
                     No tickets found. Create your first ticket to get started.
                   </TableCell>
                 </TableRow>
               ) : (
                 employeeTickets.map((ticket) => (
-                  <TableRow key={ticket.id}>
-                    <TableCell className="font-medium">{ticket.id}</TableCell>
-                    <TableCell>{ticket.category}</TableCell>
-                    <TableCell className="max-w-xs truncate">{ticket.subject}</TableCell>
+                  <TableRow key={ticket.id} className="dark:border-gray-800">
+                    <TableCell className="font-medium dark:text-gray-200">{ticket.id}</TableCell>
+                    <TableCell className="dark:text-gray-300">{ticket.category}</TableCell>
+                    <TableCell className="max-w-xs truncate dark:text-gray-300">{ticket.subject}</TableCell>
                     <TableCell>
                       <StatusBadge status={ticket.status} />
                     </TableCell>
-                    <TableCell>{ticket.assignedTo || "Pending"}</TableCell>
-                    <TableCell>
+                    <TableCell className="dark:text-gray-300">{ticket.assignedTo || "Pending"}</TableCell>
+                    <TableCell className="dark:text-gray-300">
                       {new Date(ticket.updatedAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>

@@ -55,10 +55,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-[#f8f9fa] overflow-hidden font-sans">
+    <div className="min-h-screen flex items-center justify-center relative bg-[#f8f9fa] dark:bg-gray-900 overflow-hidden font-sans">
 
       {/* Login Card */}
-      <div className="w-full max-w-sm sm:max-w-md shadow-xl border border-gray-100 login-gradient relative z-10 rounded-2xl p-8 sm:p-10 mx-4">
+      <div className="w-full max-w-sm sm:max-w-md shadow-xl border border-gray-100 dark:border-gray-800 login-gradient dark:login-gradient-dark relative z-10 rounded-2xl p-8 sm:p-10 mx-4 bg-white dark:bg-gray-950">
         
         <div className="space-y-4 text-center mb-8">
           <div className="flex justify-center">
@@ -68,14 +68,14 @@ export default function LoginPage() {
               className="w-16 h-16 rounded-2xl shadow-md object-cover"
             />
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-black leading-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-black dark:text-white leading-tight">
             HUMAN RESOURCE<br/>TICKETING
           </h1>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div className="space-y-1.5 text-left">
-            <label htmlFor="email" className="text-sm font-medium text-gray-800">
+            <label htmlFor="email" className="text-sm font-medium text-gray-800 dark:text-gray-200">
               Employee ID/ Email
             </label>
             <input
@@ -85,12 +85,12 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-11 px-3 py-2 bg-gray-100 border-none rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#b0bf00]/50 transition-shadow"
+              className="w-full h-11 px-3 py-2 bg-gray-100 dark:bg-gray-800 border-none rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b0bf00]/50 transition-shadow"
             />
           </div>
 
           <div className="space-y-1.5 text-left">
-            <label htmlFor="password" className="text-sm font-medium text-gray-800">
+            <label htmlFor="password" className="text-sm font-medium text-gray-800 dark:text-gray-200">
               Password
             </label>
             <input
@@ -100,7 +100,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full h-11 px-3 py-2 bg-gray-100 border-none rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#b0bf00]/50 transition-shadow"
+              className="w-full h-11 px-3 py-2 bg-gray-100 dark:bg-gray-800 border-none rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b0bf00]/50 transition-shadow"
             />
           </div>
 

@@ -51,9 +51,9 @@ export default function TicketDetail() {
 
   if (!ticket) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Ticket not found</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Ticket not found</h2>
           <Button onClick={() => navigate(user.role === "admin" ? "/admin" : user.role === "hr" ? "/hr" : "/employee")}>
             Go to Dashboard
           </Button>
@@ -76,10 +76,10 @@ export default function TicketDetail() {
 
   if (!canViewTicket()) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600 mb-4">You don't have permission to view this ticket.</p>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Access Denied</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">You don't have permission to view this ticket.</p>
           <Button onClick={() => navigate(user.role === "admin" ? "/admin" : user.role === "hr" ? "/hr" : "/employee")}>
             Go to Dashboard
           </Button>
@@ -112,11 +112,11 @@ export default function TicketDetail() {
   const canReassign = hasPermission("reassign_tickets");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
       
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -127,15 +127,15 @@ export default function TicketDetail() {
                 </Button>
               </Link>
               <div className="flex-1">
-                <h1 className="text-2xl font-semibold text-gray-900">{ticket.id}</h1>
-                <p className="text-gray-600 text-sm mt-0.5">{ticket.subject}</p>
+                <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{ticket.id}</h1>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-0.5">{ticket.subject}</p>
                 {/* Assigned HR Display */}
                 {ticket.assignedTo && (
                   <div className="flex items-center gap-2 mt-2">
                     <UserCheck className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       Assigned to:{" "}
-                      <span className="font-medium text-gray-900">{ticket.assignedTo}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{ticket.assignedTo}</span>
                     </span>
                     {disableAssignment && (
                       <span className="flex items-center gap-1 text-xs text-gray-500 ml-2">
@@ -158,8 +158,8 @@ export default function TicketDetail() {
           {/* Left Column - Ticket Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Employee Details */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="border-b border-gray-200">
+            <Card className="shadow-sm border-gray-200 dark:bg-gray-950 dark:border-gray-800">
+              <CardHeader className="border-b border-gray-200 dark:border-gray-800">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <User className="w-5 h-5" />
                   Employee Information
@@ -168,19 +168,19 @@ export default function TicketDetail() {
               <CardContent className="pt-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <p className="text-xs text-gray-500">Name</p>
-                    <p className="text-sm font-medium mt-1">{ticket.employeeName}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Name</p>
+                    <p className="text-sm font-medium mt-1 dark:text-white">{ticket.employeeName}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Employee ID</p>
-                    <p className="text-sm font-medium mt-1">{ticket.employeeId}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Employee ID</p>
+                    <p className="text-sm font-medium mt-1 dark:text-white">{ticket.employeeId}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Department</p>
-                    <p className="text-sm font-medium mt-1">{ticket.department}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Department</p>
+                    <p className="text-sm font-medium mt-1 dark:text-white">{ticket.department}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Priority</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Priority</p>
                     <div className="mt-1">
                       <PriorityBadge priority={ticket.priority} />
                     </div>
@@ -190,29 +190,29 @@ export default function TicketDetail() {
             </Card>
 
             {/* Request Details */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="border-b border-gray-200">
-                <CardTitle className="text-lg">Request Details</CardTitle>
+            <Card className="shadow-sm border-gray-200 dark:bg-gray-950 dark:border-gray-800">
+              <CardHeader className="border-b border-gray-200 dark:border-gray-800">
+                <CardTitle className="text-lg dark:text-white">Request Details</CardTitle>
               </CardHeader>
               <CardContent className="pt-6 space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-1">Category</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {ticket.category} → {ticket.subcategory}
                   </p>
                 </div>
-                <Separator />
+                <Separator className="dark:bg-gray-800" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">Description</p>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     {ticket.description}
                   </p>
                 </div>
                 {ticket.attachments && ticket.attachments.length > 0 && (
                   <>
-                    <Separator />
+                    <Separator className="dark:bg-gray-800" />
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                         <Paperclip className="w-4 h-4" />
                         Attachments
                       </p>
@@ -220,10 +220,10 @@ export default function TicketDetail() {
                         {ticket.attachments.map((file, index) => (
                           <div
                             key={index}
-                            className="flex items-center gap-2 p-2 bg-gray-50 rounded text-sm"
+                            className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm"
                           >
-                            <Paperclip className="w-3 h-3 text-gray-400" />
-                            <span className="text-gray-700">{file}</span>
+                            <Paperclip className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                            <span className="text-gray-700 dark:text-gray-300">{file}</span>
                           </div>
                         ))}
                       </div>
@@ -234,9 +234,9 @@ export default function TicketDetail() {
             </Card>
 
             {/* Activity Timeline */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="border-b border-gray-200">
-                <CardTitle className="flex items-center gap-2 text-lg">
+            <Card className="shadow-sm border-gray-200 dark:bg-gray-950 dark:border-gray-800">
+              <CardHeader className="border-b border-gray-200 dark:border-gray-800">
+                <CardTitle className="flex items-center gap-2 text-lg dark:text-white">
                   <Clock className="w-5 h-5" />
                   Activity Timeline
                 </CardTitle>
@@ -244,7 +244,7 @@ export default function TicketDetail() {
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   {ticket.comments.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-4">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
                       No comments yet. Be the first to comment!
                     </p>
                   ) : (
@@ -255,12 +255,12 @@ export default function TicketDetail() {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium">{comment.author}</span>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-sm font-medium text-gray-900 dark:text-white">{comment.author}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
                               {new Date(comment.timestamp).toLocaleString()}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600">{comment.content}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">{comment.content}</p>
                         </div>
                       </div>
                     ))
@@ -269,9 +269,9 @@ export default function TicketDetail() {
 
                 {hasPermission("add_comments") && (
                   <>
-                    <Separator className="my-6" />
+                    <Separator className="my-6 dark:bg-gray-800" />
                     <div className="space-y-3">
-                      <label className="text-sm font-medium text-gray-700">Add Comment</label>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Add Comment</label>
                       <Textarea
                         placeholder="Write a comment..."
                         value={newComment}
@@ -286,8 +286,8 @@ export default function TicketDetail() {
                 )}
 
                 {user.role === "employee" && !hasPermission("add_comments") && (
-                  <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-blue-700">
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm text-blue-700 dark:text-blue-400">
                       Comments will appear here when HR responds to your ticket.
                     </p>
                   </div>
@@ -297,9 +297,9 @@ export default function TicketDetail() {
 
             {/* Internal Notes (HR/Admin Only) */}
             {(user.role === "hr" || user.role === "admin") && (
-              <Card className="shadow-sm border-gray-200 border-orange-200 bg-orange-50/30">
-                <CardHeader className="border-b border-orange-200">
-                  <CardTitle className="flex items-center gap-2 text-lg text-orange-900">
+              <Card className="shadow-sm border-gray-200 dark:bg-gray-950 dark:border-gray-800 border-orange-200 dark:border-orange-900 bg-orange-50/30 dark:bg-orange-900/10">
+                <CardHeader className="border-b border-orange-200 dark:border-orange-900">
+                  <CardTitle className="flex items-center gap-2 text-lg text-orange-900 dark:text-orange-300">
                     <Shield className="w-5 h-5" />
                     Internal Notes (Not Visible to Employee)
                   </CardTitle>
@@ -311,7 +311,7 @@ export default function TicketDetail() {
                       value={internalNote}
                       onChange={(e) => setInternalNote(e.target.value)}
                       rows={3}
-                      className="bg-white"
+                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     />
                     <Button onClick={handleAddInternalNote} size="sm" variant="outline">
                       Add Note
@@ -326,14 +326,14 @@ export default function TicketDetail() {
           <div className="space-y-6">
             {/* Status & Assignment Card (HR/Admin Only) */}
             {(canUpdateStatus || canReassign) && (
-              <Card className="shadow-sm border-gray-200">
-                <CardHeader className="border-b border-gray-200">
-                  <CardTitle className="text-lg">Manage Ticket</CardTitle>
+              <Card className="shadow-sm border-gray-200 dark:bg-gray-950 dark:border-gray-800">
+                <CardHeader className="border-b border-gray-200 dark:border-gray-800">
+                  <CardTitle className="text-lg dark:text-white">Manage Ticket</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6 space-y-4">
                   {canUpdateStatus && (
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Status</label>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                       <Select value={status} onValueChange={setStatus}>
                         <SelectTrigger className="h-10">
                           <SelectValue />
@@ -351,7 +351,7 @@ export default function TicketDetail() {
 
                   {canReassign && showAssignment && (
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Assign HR Staff
                       </label>
                       <Select 
@@ -372,24 +372,24 @@ export default function TicketDetail() {
                       </Select>
                       
                       {/* Category-specific HR info */}
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         Available for {ticket.category}
                       </p>
                       
                       {/* Assignment lock warning */}
                       {ticket.status === "open" && (
-                        <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                          <Lock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-xs text-amber-900">
+                        <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                          <Lock className="w-4 h-4 text-amber-600 dark:text-amber-500 mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-amber-900 dark:text-amber-200">
                             <strong>Note:</strong> Assignment will be locked once ticket is moved to "In Progress" status.
                           </p>
                         </div>
                       )}
                       
                       {disableAssignment && (
-                        <div className="flex items-start gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                          <Lock className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                          <p className="text-xs text-gray-600">
+                        <div className="flex items-start gap-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                          <Lock className="w-4 h-4 text-gray-500 dark:text-gray-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
                             Assignment is locked. Change status to "Open" to reassign.
                           </p>
                         </div>
@@ -408,37 +408,37 @@ export default function TicketDetail() {
             )}
 
             {/* Ticket Metadata */}
-            <Card className="shadow-sm border-gray-200">
-              <CardHeader className="border-b border-gray-200">
-                <CardTitle className="flex items-center gap-2 text-lg">
+            <Card className="shadow-sm border-gray-200 dark:bg-gray-950 dark:border-gray-800">
+              <CardHeader className="border-b border-gray-200 dark:border-gray-800">
+                <CardTitle className="flex items-center gap-2 text-lg dark:text-white">
                   <Calendar className="w-5 h-5" />
                   Details
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6 space-y-3">
                 <div>
-                  <p className="text-xs text-gray-500">Created</p>
-                  <p className="text-sm font-medium mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Created</p>
+                  <p className="text-sm font-medium mt-1 text-gray-900 dark:text-white">
                     {new Date(ticket.createdAt).toLocaleString()}
                   </p>
                 </div>
-                <Separator />
+                <Separator className="dark:bg-gray-800" />
                 <div>
-                  <p className="text-xs text-gray-500">Last Updated</p>
-                  <p className="text-sm font-medium mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Last Updated</p>
+                  <p className="text-sm font-medium mt-1 text-gray-900 dark:text-white">
                     {new Date(ticket.updatedAt).toLocaleString()}
                   </p>
                 </div>
-                <Separator />
+                <Separator className="dark:bg-gray-800" />
                 <div>
-                  <p className="text-xs text-gray-500">Assigned To</p>
-                  <p className="text-sm font-medium mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Assigned To</p>
+                  <p className="text-sm font-medium mt-1 text-gray-900 dark:text-white">
                     {ticket.assignedTo || "Pending Assignment"}
                   </p>
                 </div>
-                <Separator />
+                <Separator className="dark:bg-gray-800" />
                 <div>
-                  <p className="text-xs text-gray-500">Current Status</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Current Status</p>
                   <div className="mt-1">
                     <StatusBadge status={ticket.status} />
                   </div>
@@ -448,9 +448,9 @@ export default function TicketDetail() {
 
             {/* Employee View Notice */}
             {user.role === "employee" && (
-              <Card className="shadow-sm border-blue-200 bg-blue-50">
-                <CardContent className="pt-6">
-                  <p className="text-sm text-blue-900">
+              <Card className=\"shadow-sm border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20\">
+                <CardContent className=\"pt-6\">
+                  <p className=\"text-sm text-blue-900 dark:text-blue-300\">
                     <strong>Note:</strong> You can view your ticket status and HR responses here. Status updates and reassignment are managed by HR.
                   </p>
                 </CardContent>
