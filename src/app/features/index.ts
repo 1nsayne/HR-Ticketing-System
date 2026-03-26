@@ -1,5 +1,5 @@
-// Auth features
-export { LoginPage } from './auth';
+// Login features
+export { LoginPage } from './login';
 
 // Employee features
 export { EmployeeDashboard, CreateTicket, TicketDetail } from './employee';

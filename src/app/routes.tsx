@@ -1,5 +1,5 @@
-import { createBrowserRouter } from "react-router";
-import { LoginPage } from "./features/auth";
+import { createBrowserRouter, Navigate } from "react-router";
+import { LoginPage } from "./features/login";
 import { EmployeeDashboard, CreateTicket, TicketDetail } from "./features/employee";
 import { HRPage } from "./features/hr";
 import { AdminTickets, AdminEmployees } from "./features/admin";
@@ -10,7 +10,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: LoginPage,
+    element: <Navigate to="/login" replace />,
   },
   {
     path: "/login",

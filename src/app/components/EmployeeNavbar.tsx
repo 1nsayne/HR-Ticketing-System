@@ -9,12 +9,17 @@ import logo from "../../assets/logo.png";
 export function EmployeeNavbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { path: "/employee", label: "Home", icon: Home },
     { path: "/employee/create-ticket", label: "Create Ticket", icon: PlusCircle },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <nav className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
@@ -57,7 +62,7 @@ export function EmployeeNavbar() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/")}
+              onClick={handleLogout}
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout

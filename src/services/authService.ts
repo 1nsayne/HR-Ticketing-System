@@ -4,6 +4,8 @@
  */
 
 import {
+  browserLocalPersistence,
+  setPersistence,
   signInWithEmailAndPassword,
   signOut,
   User,
@@ -35,6 +37,7 @@ export const loginWithEmailPassword = async (
   password: string
 ): Promise<User> => {
   try {
+    await setPersistence(auth, browserLocalPersistence);
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
   } catch (error: any) {
@@ -61,6 +64,22 @@ export const logout = async (): Promise<void> => {
  */
 export const getCurrentUser = (): User | null => {
   return auth.currentUser;
+};
+
+/**
+ * Get the current user's Firebase ID token
+ * @param forceRefresh Whether to force token refresh
+ * @returns The ID token or null if not authenticated
+ */
+export const getAuthToken = async (forceRefresh = false): Promise<string | null> => {
+  try {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return null;
+    return await currentUser.getIdToken(forceRefresh);
+  } catch (error: any) {
+    console.error('Failed to get auth token:', error.message);
+    return null;
+  }
 };
 
 /**

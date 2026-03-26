@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { UserRole } from '../../../services/authService';
+import { UserRole } from '../../services/authService';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-  const { user, role, loading } = useAuth();
+  const { role, loading, isAuthenticated } = useAuth();
 
   if (loading) {
     return (
@@ -22,8 +22,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
-  if (role && !allowedRoles.includes(role)) return <Navigate to="/unauthorized" replace />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!allowedRoles.includes(role)) return <Navigate to="/unauthorized" replace />;
 
   return <>{children}</>;
 };

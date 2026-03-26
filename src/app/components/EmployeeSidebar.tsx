@@ -17,12 +17,17 @@ interface EmployeeSidebarProps {
 export function EmployeeSidebar({ className }: EmployeeSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { path: "/employee", label: "Dashboard", icon: LayoutDashboard },
     { path: "/employee/create-ticket", label: "Create Ticket", icon: Plus },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className={cn("w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 h-screen sticky top-0 flex flex-col", className)}>
@@ -75,7 +80,7 @@ export function EmployeeSidebar({ className }: EmployeeSidebarProps) {
         <Button
           variant="ghost"
           className="w-full justify-start h-12 text-sm hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-600 dark:hover:text-red-400 border border-gray-200 dark:border-gray-800"
-          onClick={() => navigate("/")}
+          onClick={handleLogout}
         >
           <LogOut className="w-4 h-4 mr-2" />
           Logout

@@ -32,7 +32,7 @@ After running the seed script, these accounts are available:
 |------|-------|----------|
 | Admin | admin@company.com | Admin@1234 |
 | HR | hr@company.com | Hr@1234 |
-| Employee | employee@company.com | Employee@1234 |
+| Employee | employee@company.com |   |
 
 ---
 

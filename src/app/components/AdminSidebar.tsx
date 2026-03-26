@@ -19,13 +19,18 @@ interface AdminSidebarProps {
 export function AdminSidebar({ className }: AdminSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { path: "/admin/tickets", label: "Tickets", icon: Ticket },
     { path: "/admin/employees", label: "Employees", icon: Users },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className={cn("w-64 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 h-screen fixed left-0 top-0 flex flex-col z-40", className)}>
@@ -78,7 +83,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
         <Button
           variant="ghost"
           className="w-full justify-start h-12 text-sm hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-600 dark:hover:text-red-400 border border-gray-200 dark:border-gray-800"
-          onClick={() => navigate("/")}
+          onClick={handleLogout}
         >
           <LogOut className="w-4 h-4 mr-2" />
           Logout
