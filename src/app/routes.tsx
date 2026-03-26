@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { LoginPage } from "./features/login";
 import { EmployeeDashboard, CreateTicket, TicketDetail } from "./features/employee";
 import { HRPage } from "./features/hr";
-import { AdminTickets, AdminEmployees } from "./features/admin";
+import { AdminTickets, UserManagement } from "./features/admin";
 import AdminDashboard from "./pages/AdminDashboard";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -64,7 +64,7 @@ export const router = createBrowserRouter([
     path: "/admin/employees",
     element: (
       <ProtectedRoute allowedRoles={["admin", "hr"]}>
-        <AdminEmployees />
+        <UserManagement />
       </ProtectedRoute>
     ),
   },

@@ -24,7 +24,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
   const navItems = [
     { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { path: "/admin/tickets", label: "Tickets", icon: Ticket },
-    { path: "/admin/employees", label: "Employees", icon: Users },
+    { path: "/admin/employees", label: "Users", icon: Users },
   ];
 
   const handleLogout = async () => {

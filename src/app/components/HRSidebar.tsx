@@ -16,7 +16,7 @@ export function HRSidebar({ className }: HRSidebarProps) {
 
   const navItems = [
     { path: "/hr", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/admin/employees", label: "Employees", icon: Users }, // Redirected to Admin Employees
+    { path: "/admin/employees", label: "Users", icon: Users }, // Redirected to Admin Users
   ];
 
   const handleLogout = async () => {

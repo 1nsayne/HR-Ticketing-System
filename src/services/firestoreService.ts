@@ -28,10 +28,10 @@ import { db } from '../lib/firebase';
  * @param docId - The document ID
  * @returns The document data with ID, or null if not found
  */
-export const getDoc_<T extends DocumentData = DocumentData>(
+export const getDoc_ = <T extends DocumentData = DocumentData>(
   collectionPath: string,
   docId: string
-): Promise<(T & { id: string }) | null> {
+): Promise<(T & { id: string }) | null> => {
   return new Promise(async (resolve, reject) => {
     try {
       const docRef = doc(db, collectionPath, docId);
@@ -58,10 +58,10 @@ export const getDoc_<T extends DocumentData = DocumentData>(
  * @param constraints - Optional Firestore query constraints
  * @returns Array of documents with their IDs
  */
-export const getDocs_<T extends DocumentData = DocumentData>(
+export const getDocs_ = <T extends DocumentData = DocumentData>(
   collectionPath: string,
   constraints: QueryConstraint[] = []
-): Promise<(T & { id: string })[]> {
+): Promise<(T & { id: string })[]> => {
   return new Promise(async (resolve, reject) => {
     try {
       const q: Query<DocumentData> = query(
@@ -92,10 +92,10 @@ export const getDocs_<T extends DocumentData = DocumentData>(
  * @param data - The document data
  * @returns The ID of the newly created document
  */
-export const addDoc_<T extends DocumentData = DocumentData>(
+export const addDoc_ = <T extends DocumentData = DocumentData>(
   collectionPath: string,
   data: T
-): Promise<string> {
+): Promise<string> => {
   return new Promise(async (resolve, reject) => {
     try {
       const docRef = await addDoc(collection(db, collectionPath), {
@@ -117,11 +117,11 @@ export const addDoc_<T extends DocumentData = DocumentData>(
  * @param docId - The document ID
  * @param data - The partial data to update
  */
-export const updateDoc_<T extends Partial<DocumentData> = Partial<DocumentData>>(
+export const updateDoc_ = <T extends Partial<DocumentData> = Partial<DocumentData>>(
   collectionPath: string,
   docId: string,
   data: T
-): Promise<void> {
+): Promise<void> => {
   return new Promise(async (resolve, reject) => {
     try {
       const docRef = doc(db, collectionPath, docId);
@@ -141,10 +141,10 @@ export const updateDoc_<T extends Partial<DocumentData> = Partial<DocumentData>>
  * @param collectionPath - The Firestore collection path
  * @param docId - The document ID
  */
-export const deleteDoc_<T extends DocumentData = DocumentData>(
+export const deleteDoc_ = <T extends DocumentData = DocumentData>(
   collectionPath: string,
   docId: string
-): Promise<void> {
+): Promise<void> => {
   return new Promise(async (resolve, reject) => {
     try {
       const docRef = doc(db, collectionPath, docId);
@@ -164,10 +164,10 @@ export const deleteDoc_<T extends DocumentData = DocumentData>(
  * @param constraints - Array of Firestore QueryConstraints (where, orderBy, limit, etc.)
  * @returns Array of matching documents with their IDs
  */
-export const queryDocs_<T extends DocumentData = DocumentData>(
+export const queryDocs_ = <T extends DocumentData = DocumentData>(
   collectionPath: string,
   constraints: QueryConstraint[]
-): Promise<(T & { id: string })[]> {
+): Promise<(T & { id: string })[]> => {
   return getDocs_<T>(collectionPath, constraints);
 }
 
@@ -177,14 +177,14 @@ export const queryDocs_<T extends DocumentData = DocumentData>(
  * @param collectionPath - The Firestore collection path
  * @param operations - Array of { type: 'add'|'update'|'delete', id?: string, data?: T }
  */
-export const batchWrite_<T extends DocumentData = DocumentData>(
+export const batchWrite_ = <T extends DocumentData = DocumentData>(
   collectionPath: string,
   operations: Array<{
     type: 'add' | 'update' | 'delete';
     id?: string;
     data?: T;
   }>
-): Promise<void> {
+): Promise<void> => {
   return new Promise(async (resolve, reject) => {
     try {
       for (const operation of operations) {
