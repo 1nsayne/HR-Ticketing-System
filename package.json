@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "seed:managed-users": "node src/scripts/seedManagedUsers.js",
+    "drop:managed-users": "node src/scripts/dropManagedUsersCollection.js"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

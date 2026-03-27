@@ -1,18 +1,18 @@
 import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router";
-import { AdminSidebar } from "../components/AdminSidebar";
-import { KPICard } from "../components/KPICard";
-import { StatusBadge } from "../components/StatusBadge";
-import { PriorityBadge } from "../components/PriorityBadge";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
+import { AdminSidebar } from "../../components/AdminSidebar";
+import { KPICard } from "../../components/KPICard";
+import { StatusBadge } from "../../components/StatusBadge";
+import { PriorityBadge } from "../../components/PriorityBadge";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from "../../components/ui/select";
 import {
   Table,
   TableBody,
@@ -20,25 +20,22 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../components/ui/table";
+} from "../../components/ui/table";
 import {
   Calendar,
   Ticket,
   FolderOpen,
   AlertCircle,
   Clock,
-  Users,
   TrendingUp,
   BarChart3,
-  PieChart,
 } from "lucide-react";
-import { mockTickets, categories } from "../data/mockData";
-import { DashboardGraphs } from "../components/DashboardGraphs";
-import { useAuth } from "../contexts/AuthContext";
-import { Calendar as CalendarComponent } from "../components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+import { mockTickets, categories } from "../../data/mockData";
+import { DashboardGraphs } from "../../components/DashboardGraphs";
+import { useAuth } from "../../contexts/AuthContext";
+import { Calendar as CalendarComponent } from "../../components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
 import { format } from "date-fns";
-import { cn } from "../components/ui/utils";
 
 export default function AdminDashboard() {
   const [filterCategory, setFilterCategory] = useState("all");
@@ -51,7 +48,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Calculate KPIs
   const totalTickets = mockTickets.length;
   const openTickets = mockTickets.filter(
     (t) => t.status === "open" || t.status === "in-progress"
@@ -62,18 +58,20 @@ export default function AdminDashboard() {
     return daysSinceUpdate > 3 && t.status !== "resolved" && t.status !== "closed";
   }).length;
   const avgResolutionDays = useMemo(() => {
-    const resolved = mockTickets.filter(t => t.status === "resolved" || t.status === "closed");
+    const resolved = mockTickets.filter((t) => t.status === "resolved" || t.status === "closed");
     if (resolved.length === 0) return 0;
-    const avg = resolved.reduce((sum, t) => {
-      const days = (new Date(t.updatedAt).getTime() - new Date(t.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-      return sum + days;
-    }, 0) / resolved.length;
+    const avg =
+      resolved.reduce((sum, t) => {
+        const days =
+          (new Date(t.updatedAt).getTime() - new Date(t.createdAt).getTime()) /
+          (1000 * 60 * 60 * 24);
+        return sum + days;
+      }, 0) / resolved.length;
     return avg.toFixed(1);
   }, []);
 
-  // Filter tickets
   const filteredTickets = useMemo(() => {
-    let tickets = mockTickets.filter(t => {
+    let tickets = mockTickets.filter((t) => {
       const createdDate = new Date(t.createdAt);
       const fromOk = !dateRange.from || createdDate >= dateRange.from;
       const toOk = !dateRange.to || createdDate <= dateRange.to;
@@ -89,7 +87,7 @@ export default function AdminDashboard() {
     if (filterPriority !== "all") {
       tickets = tickets.filter((t) => t.priority === filterPriority);
     }
-    return tickets.slice(0, 10); // Recent 10 for compact table
+    return tickets.slice(0, 10);
   }, [filterCategory, filterStatus, filterPriority, dateRange]);
 
   return (
@@ -98,7 +96,6 @@ export default function AdminDashboard() {
 
       <div className="flex-1 ml-64 p-0 overflow-auto">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-          {/* Hero Header */}
           <div className="mb-12">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
@@ -109,11 +106,9 @@ export default function AdminDashboard() {
                   Analytics and insights for HR ticketing system. Monitor performance and trends.
                 </p>
               </div>
-
             </div>
           </div>
 
-          {/* Enhanced KPIs */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <KPICard
               title="Total Tickets"
@@ -145,7 +140,6 @@ export default function AdminDashboard() {
             />
           </div>
 
-          {/* Filters & Date Range */}
           <Card className="shadow-lg border-0 mb-8 bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm dark:border dark:border-gray-700">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
@@ -204,10 +198,10 @@ export default function AdminDashboard() {
                         {dateRange.from ? (
                           dateRange.to ? (
                             <>
-                              {format(dateRange.from, 'PPP')} - {format(dateRange.to, 'PPP')}
+                              {format(dateRange.from, "PPP")} - {format(dateRange.to, "PPP")}
                             </>
                           ) : (
-                            format(dateRange.from, 'PPP')
+                            format(dateRange.from, "PPP")
                           )
                         ) : (
                           <span>Pick a date</span>
@@ -220,7 +214,12 @@ export default function AdminDashboard() {
                         mode="range"
                         defaultMonth={dateRange.from}
                         selected={dateRange}
-                        onSelect={(range) => setDateRange({ from: range?.from || new Date(2024, 0, 1), to: range?.to || new Date() })}
+                        onSelect={(range) =>
+                          setDateRange({
+                            from: range?.from || new Date(2024, 0, 1),
+                            to: range?.to || new Date(),
+                          })
+                        }
                         numberOfMonths={2}
                       />
                     </PopoverContent>
@@ -230,19 +229,19 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Analytics Charts */}
           <div className="grid grid-cols-1 gap-8 mb-12">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                 <BarChart3 className="w-7 h-7" />
                 Analytics Overview
               </h2>
-<p className="text-gray-700 dark:text-gray-200 mb-8">Visual insights into your ticketing performance</p>
+              <p className="text-gray-700 dark:text-gray-200 mb-8">
+                Visual insights into your ticketing performance
+              </p>
               <DashboardGraphs />
             </div>
           </div>
 
-          {/* Recent Tickets */}
           <Card className="shadow-lg border-0 dark:bg-gray-950 dark:border dark:border-gray-800">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -254,9 +253,7 @@ export default function AdminDashboard() {
                   <CardDescription>Latest 10 filtered tickets</CardDescription>
                 </div>
                 <Link to="/admin/tickets">
-                  <Button variant="outline">
-                    View All Tickets
-                  </Button>
+                  <Button variant="outline">View All Tickets</Button>
                 </Link>
               </div>
             </CardHeader>
@@ -284,7 +281,9 @@ export default function AdminDashboard() {
                       {filteredTickets.map((ticket) => (
                         <TableRow key={ticket.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                           <TableCell className="font-mono text-sm dark:text-gray-300">{ticket.id}</TableCell>
-                          <TableCell className="font-medium dark:text-gray-300">{ticket.employeeName}</TableCell>
+                          <TableCell className="font-medium dark:text-gray-300">
+                            {ticket.employeeName}
+                          </TableCell>
                           <TableCell className="text-sm dark:text-gray-300">{ticket.category}</TableCell>
                           <TableCell>
                             <PriorityBadge priority={ticket.priority} />

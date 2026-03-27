@@ -1,0 +1,32 @@
+export const sharedUserData = [
+  {
+    id: "user_juan_delacruz",
+    firstName: "Juan",
+    lastName: "Dela Cruz",
+    email: "juan.delacruz@company.com",
+    password: "92785706d12030672a24bac2c017110488c461a63c1bbc46feddbcf777d219b4",
+    phone: "+63 912 345 6789",
+    joinDate: "2024-01-15",
+    role: "employee",
+  },
+  {
+    id: "user_maria_santos",
+    firstName: "Maria",
+    lastName: "Santos",
+    email: "maria.santos@company.com",
+    password: "75522ad8e45c35c1969167b6f8e32f8886e2d26ff3f53f92299eab4a8cad7dee",
+    phone: "+63 917 123 4567",
+    joinDate: "2023-11-02",
+    role: "hr",
+  },
+  {
+    id: "user_carlo_reyes",
+    firstName: "Carlo",
+    lastName: "Reyes",
+    email: "carlo.reyes@company.com",
+    password: "a7b7a75c97b2fcf90eac76f882052894e506937a29680d9734efd19588540231",
+    phone: "+63 918 987 6543",
+    joinDate: "2022-08-20",
+    role: "admin",
+  },
+];

@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   ReactNode,
 } from "react";
@@ -10,10 +11,13 @@ import { flushSync } from "react-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import {
+  clearBrowserCloseTimestamp,
   getAuthToken,
   getUserData,
   getUserRole,
   logout as firebaseLogout,
+  markBrowserCloseTimestamp,
+  shouldReauthenticateAfterBrowserClose,
   type UserRole as FirebaseUserRole,
 } from "../../services/authService";
 import { User, UserRole, currentUser as defaultUser } from "../data/mockData";
@@ -32,6 +36,24 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const DEFAULT_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
+const configuredInactivityTimeout = Number(
+  import.meta.env.VITE_AUTH_INACTIVITY_TIMEOUT_MS
+);
+const INACTIVITY_TIMEOUT_MS =
+  Number.isFinite(configuredInactivityTimeout) && configuredInactivityTimeout > 0
+    ? configuredInactivityTimeout
+    : DEFAULT_INACTIVITY_TIMEOUT_MS;
+const SESSION_EXPIRED_STORAGE_KEY = "auth:session-expired";
+const BROWSER_CLOSE_EXPIRED_STORAGE_KEY = "auth:browser-close-expired";
+const ACTIVITY_EVENTS: Array<keyof WindowEventMap> = [
+  "mousedown",
+  "mousemove",
+  "keydown",
+  "scroll",
+  "touchstart",
+  "click",
+];
 
 const createFallbackUser = (
   email?: string | null,
@@ -63,10 +85,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const inactivityTimeoutRef = useRef<number | null>(null);
+  const isSessionExpiringRef = useRef(false);
+
+  const clearInactivityTimeout = () => {
+    if (inactivityTimeoutRef.current !== null) {
+      window.clearTimeout(inactivityTimeoutRef.current);
+      inactivityTimeoutRef.current = null;
+    }
+  };
+
+  const clearUser = () => {
+    clearInactivityTimeout();
+    clearBrowserCloseTimestamp();
+    setUserState(defaultUser);
+    setRole(defaultUser.role);
+    setToken(null);
+    setIsAuthenticated(false);
+  };
+
+  const expireSessionForInactivity = async () => {
+    if (isSessionExpiringRef.current) return;
+
+    isSessionExpiringRef.current = true;
+
+    try {
+      sessionStorage.setItem(SESSION_EXPIRED_STORAGE_KEY, "1");
+      await firebaseLogout();
+    } catch (error) {
+      console.error("Failed to sign out after inactivity:", error);
+    } finally {
+      flushSync(() => {
+        clearUser();
+      });
+      window.location.replace("/login");
+    }
+  };
+
+  const resetInactivityTimeout = () => {
+    clearInactivityTimeout();
+
+    if (!isAuthenticated) return;
+
+    inactivityTimeoutRef.current = window.setTimeout(() => {
+      void expireSessionForInactivity();
+    }, INACTIVITY_TIMEOUT_MS);
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser) {
+        clearInactivityTimeout();
+        isSessionExpiringRef.current = false;
         setIsAuthenticated(false);
         setUserState(defaultUser);
         setRole(defaultUser.role);
@@ -78,6 +148,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
 
       try {
+        if (shouldReauthenticateAfterBrowserClose()) {
+          sessionStorage.setItem(BROWSER_CLOSE_EXPIRED_STORAGE_KEY, "1");
+          await firebaseLogout();
+          return;
+        }
+
         const [userData, fetchedRole] = await Promise.all([
           getUserData(firebaseUser.uid),
           getUserRole(firebaseUser.uid),
@@ -100,6 +176,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(resolvedRole);
         setToken(authToken);
         setIsAuthenticated(true);
+        clearBrowserCloseTimestamp();
+        resetInactivityTimeout();
       } catch (error) {
         console.error("Failed to restore authenticated user:", error);
         const fallbackUser = createFallbackUser(
@@ -112,6 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(fallbackUser.role);
         setToken(null);
         setIsAuthenticated(true);
+        resetInactivityTimeout();
       } finally {
         setLoading(false);
       }
@@ -120,17 +199,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const handlePageHide = () => {
+      if (auth.currentUser) {
+        markBrowserCloseTimestamp();
+      }
+    };
+
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, []);
+
   const setUser = (nextUser: User) => {
     setUserState(nextUser);
     setRole(nextUser.role);
     setIsAuthenticated(true);
-  };
-
-  const clearUser = () => {
-    setUserState(defaultUser);
-    setRole(defaultUser.role);
-    setToken(null);
-    setIsAuthenticated(false);
+    resetInactivityTimeout();
   };
 
   const logout = async () => {
@@ -143,9 +230,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      clearInactivityTimeout();
+      return;
+    }
+
+    const handleActivity = () => {
+      resetInactivityTimeout();
+    };
+
+    ACTIVITY_EVENTS.forEach((eventName) => {
+      window.addEventListener(eventName, handleActivity, { passive: true });
+    });
+
+    resetInactivityTimeout();
+
+    return () => {
+      ACTIVITY_EVENTS.forEach((eventName) => {
+        window.removeEventListener(eventName, handleActivity);
+      });
+      clearInactivityTimeout();
+    };
+  }, [isAuthenticated]);
+
   const refreshToken = async (): Promise<string | null> => {
     const nextToken = await getAuthToken(true);
     setToken(nextToken);
+    resetInactivityTimeout();
     return nextToken;
   };
 

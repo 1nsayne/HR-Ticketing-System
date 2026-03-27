@@ -5,8 +5,11 @@ export { LoginPage } from './login';
 export { EmployeeDashboard, CreateTicket, TicketDetail } from './employee';
 
 // HR features
-export { HRPage, HREmployees } from './hr';
+export { HRPage } from './hr';
 
 // Admin features
 export { AdminDashboard } from './admin';
+
+// Unauthorized feature
+export { UnauthorizedPage } from "./unauthorized";
 

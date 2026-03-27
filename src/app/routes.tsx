@@ -2,9 +2,8 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { LoginPage } from "./features/login";
 import { EmployeeDashboard, CreateTicket, TicketDetail } from "./features/employee";
 import { HRPage } from "./features/hr";
-import { AdminTickets, UserManagement } from "./features/admin";
-import AdminDashboard from "./pages/AdminDashboard";
-import UnauthorizedPage from "./pages/UnauthorizedPage";
+import { AdminDashboard, AdminTickets, UserManagement } from "./features/admin";
+import { UnauthorizedPage } from "./features/unauthorized";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([

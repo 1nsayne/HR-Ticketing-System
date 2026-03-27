@@ -7,6 +7,9 @@ import { getUserData, getUserRole, loginWithEmailPassword, type UserRole } from 
 import logo from "../../../assets/logo.png";
 import "../../../styles/login.css";
 
+const SESSION_EXPIRED_STORAGE_KEY = "auth:session-expired";
+const BROWSER_CLOSE_EXPIRED_STORAGE_KEY = "auth:browser-close-expired";
+
 // --- Custom SVG Components ---
 
 // Honeycomb Pattern Component
@@ -58,6 +61,24 @@ export default function LoginPage() {
       navigate(getRouteForRole(role), { replace: true });
     }
   }, [isAuthenticated, loading, navigate, role]);
+
+  useEffect(() => {
+    const didSessionExpire =
+      sessionStorage.getItem(SESSION_EXPIRED_STORAGE_KEY) === "1";
+    const didBrowserCloseExpire =
+      sessionStorage.getItem(BROWSER_CLOSE_EXPIRED_STORAGE_KEY) === "1";
+
+    if (didBrowserCloseExpire) {
+      setError("Your previous browser session was closed for more than 5 minutes. Please sign in again.");
+      sessionStorage.removeItem(BROWSER_CLOSE_EXPIRED_STORAGE_KEY);
+      return;
+    }
+
+    if (didSessionExpire) {
+      setError("Your session expired due to inactivity. Please sign in again.");
+      sessionStorage.removeItem(SESSION_EXPIRED_STORAGE_KEY);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

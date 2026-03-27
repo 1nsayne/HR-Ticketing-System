@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import {
@@ -20,12 +19,15 @@ import {
   DialogTitle,
 } from "../../components/ui/dialog";
 import { Search, Plus, MoreVertical } from "lucide-react";
-import { addDoc_, getDocs_ } from "../../../services/firestoreService";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { getDocs_ } from "../../../services/firestoreService";
+import { db } from "../../../lib/firebase";
+import { sharedUserData } from "../../../shared/sharedUserData.js";
+import { hashPassword } from "../../utils/hashPassword";
 
-type UserLevel = "employee" | "hr" | "admin";
-type UserStatus = "active" | "inactive" | "on-leave";
+type UserRole = "employee" | "hr" | "admin";
 
-interface ManagedUser {
+interface UserRecord {
   id: string;
   firstName: string;
   lastName: string;
@@ -33,82 +35,41 @@ interface ManagedUser {
   password: string;
   phone: string;
   joinDate: string;
-  position: string;
-  userLevel: UserLevel;
-  status: UserStatus;
+  role: UserRole;
 }
 
-interface ManagedUserDocument extends Omit<ManagedUser, "id"> {
+interface UserDocument extends Omit<UserRecord, "id"> {
   createdAt?: string;
   updatedAt?: string;
 }
 
-const USERS_COLLECTION = "managed_users";
+const USERS_COLLECTION = "user";
 
-const dummyUsers: ManagedUserDocument[] = [
-  {
-    firstName: "Juan",
-    lastName: "Dela Cruz",
-    email: "juan.delacruz@company.com",
-    password: "Juan@1234",
-    phone: "+63 912 345 6789",
-    joinDate: "2024-01-15",
-    position: "Support Staff",
-    userLevel: "employee",
-    status: "active",
-  },
-  {
-    firstName: "Maria",
-    lastName: "Santos",
-    email: "maria.santos@company.com",
-    password: "Maria@1234",
-    phone: "+63 917 123 4567",
-    joinDate: "2023-11-02",
-    position: "HR Specialist",
-    userLevel: "hr",
-    status: "active",
-  },
-  {
-    firstName: "Carlo",
-    lastName: "Reyes",
-    email: "carlo.reyes@company.com",
-    password: "Carlo@1234",
-    phone: "+63 918 987 6543",
-    joinDate: "2022-08-20",
-    position: "System Administrator",
-    userLevel: "admin",
-    status: "on-leave",
-  },
-];
-
-const emptyUserForm: Omit<ManagedUser, "id"> = {
+const emptyUserForm: Omit<UserRecord, "id"> = {
   firstName: "",
   lastName: "",
   email: "",
   password: "",
   phone: "+63 ",
   joinDate: new Date().toISOString().split("T")[0],
-  position: "",
-  userLevel: "employee",
-  status: "active",
+  role: "employee",
 };
 
-const formatUserLevel = (userLevel: UserLevel) => {
-  if (userLevel === "hr") return "HR";
-  if (userLevel === "admin") return "ADMIN";
+const formatUserRole = (role: UserRole) => {
+  if (role === "hr") return "HR";
+  if (role === "admin") return "ADMIN";
   return "Employee";
 };
 
 export default function AdminEmployees() {
-  const [users, setUsers] = useState<ManagedUser[]>([]);
+  const [users, setUsers] = useState<UserRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterUserLevel, setFilterUserLevel] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterRole, setFilterRole] = useState("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
-  const [newUser, setNewUser] = useState<Omit<ManagedUser, "id">>(emptyUserForm);
+  const [newUser, setNewUser] = useState<Omit<UserRecord, "id">>(emptyUserForm);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -116,13 +77,18 @@ export default function AdminEmployees() {
       setError("");
 
       try {
-        let storedUsers = await getDocs_<ManagedUserDocument>(USERS_COLLECTION);
+        let storedUsers = await getDocs_<UserDocument>(USERS_COLLECTION);
 
         if (storedUsers.length === 0) {
-          for (const user of dummyUsers) {
-            await addDoc_<ManagedUserDocument>(USERS_COLLECTION, user);
+          for (const { id, ...user } of sharedUserData) {
+            await setDoc(doc(db, USERS_COLLECTION, id), {
+              id,
+              ...user,
+              createdAt: Timestamp.now(),
+              updatedAt: Timestamp.now(),
+            });
           }
-          storedUsers = await getDocs_<ManagedUserDocument>(USERS_COLLECTION);
+          storedUsers = await getDocs_<UserDocument>(USERS_COLLECTION);
         }
 
         setUsers(
@@ -134,9 +100,7 @@ export default function AdminEmployees() {
             password: user.password,
             phone: user.phone,
             joinDate: user.joinDate,
-            position: user.position,
-            userLevel: user.userLevel,
-            status: user.status,
+            role: user.role,
           }))
         );
       } catch (err) {
@@ -154,20 +118,15 @@ export default function AdminEmployees() {
     const matchesSearch =
       fullName.includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.position.toLowerCase().includes(searchQuery.toLowerCase());
+      user.phone.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesUserLevel =
-      filterUserLevel === "all" || user.userLevel === filterUserLevel;
-    const matchesStatus =
-      filterStatus === "all" || user.status === filterStatus;
-
-    return matchesSearch && matchesUserLevel && matchesStatus;
+    return matchesSearch && (filterRole === "all" || user.role === filterRole);
   });
 
   const handleAddUser = async () => {
-    const { firstName, lastName, email, password, phone, joinDate, position, userLevel, status } = newUser;
+    const { firstName, lastName, email, password, phone, joinDate, role } = newUser;
 
-    if (!firstName || !lastName || !email || !password || !phone || !joinDate || !position) {
+    if (!firstName || !lastName || !email || !password || !phone || !joinDate) {
       setError("Please complete all required user fields.");
       return;
     }
@@ -176,23 +135,26 @@ export default function AdminEmployees() {
     setError("");
 
     try {
-      const payload: ManagedUserDocument = {
+      const payload: UserDocument = {
         firstName,
         lastName,
         email,
-        password,
+        password: await hashPassword(password),
         phone,
         joinDate,
-        position,
-        userLevel,
-        status,
+        role,
       };
-
-      const docId = await addDoc_<ManagedUserDocument>(USERS_COLLECTION, payload);
+      const userId = crypto.randomUUID();
+      await setDoc(doc(db, USERS_COLLECTION, userId), {
+        id: userId,
+        ...payload,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      });
 
       setUsers((currentUsers) => [
         {
-          id: docId,
+          id: userId,
           ...payload,
         },
         ...currentUsers,
@@ -207,29 +169,6 @@ export default function AdminEmployees() {
     }
   };
 
-  const getStatusBadge = (status: UserStatus) => {
-    switch (status) {
-      case "active":
-        return (
-          <Badge className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900">
-            Active
-          </Badge>
-        );
-      case "on-leave":
-        return (
-          <Badge className="bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900">
-            On Leave
-          </Badge>
-        );
-      case "inactive":
-        return (
-          <Badge className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-            Inactive
-          </Badge>
-        );
-    }
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
       <AdminSidebar />
@@ -239,7 +178,7 @@ export default function AdminEmployees() {
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">User Management</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage system users from Firebase</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">View and manage users from Firestore</p>
             </div>
             <Button onClick={() => setIsAddDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -248,7 +187,7 @@ export default function AdminEmployees() {
           </div>
 
           <div className="bg-white dark:bg-gray-950 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                 <div className="relative">
@@ -264,31 +203,16 @@ export default function AdminEmployees() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">User Level</label>
-                <Select value={filterUserLevel} onValueChange={setFilterUserLevel}>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                <Select value={filterRole} onValueChange={setFilterRole}>
                   <SelectTrigger className="h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All User Levels</SelectItem>
+                    <SelectItem value="all">All Roles</SelectItem>
                     <SelectItem value="employee">Employee</SelectItem>
                     <SelectItem value="hr">HR</SelectItem>
                     <SelectItem value="admin">ADMIN</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="h-10">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="on-leave">On Leave</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -313,22 +237,20 @@ export default function AdminEmployees() {
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Email</th>
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Phone</th>
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Join Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Position</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">User Level</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Role</th>
                     <th className="px-6 py-4"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                   {isLoading ? (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                        Loading users from Firebase...
+                      <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                        Loading users from Firestore...
                       </td>
                     </tr>
                   ) : filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                      <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                         No users found matching your filters.
                       </td>
                     </tr>
@@ -352,11 +274,9 @@ export default function AdminEmployees() {
                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                           {new Date(user.joinDate).toLocaleDateString()}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{user.position}</td>
                         <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                          {formatUserLevel(user.userLevel)}
+                          {formatUserRole(user.role)}
                         </td>
-                        <td className="px-6 py-4">{getStatusBadge(user.status)}</td>
                         <td className="px-6 py-4">
                           <Button variant="ghost" size="sm">
                             <MoreVertical className="w-4 h-4" />
@@ -377,7 +297,7 @@ export default function AdminEmployees() {
           <DialogHeader>
             <DialogTitle>Add New User</DialogTitle>
             <DialogDescription>
-              Enter the user details below to save them to Firebase.
+              Enter the user details below to save a hashed password to Firestore.
             </DialogDescription>
           </DialogHeader>
 
@@ -419,7 +339,7 @@ export default function AdminEmployees() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter default password"
+                  placeholder="Enter password"
                   value={newUser.password}
                   onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                 />
@@ -445,23 +365,14 @@ export default function AdminEmployees() {
                   onChange={(e) => setNewUser({ ...newUser, joinDate: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="position">Position *</Label>
-                <Input
-                  id="position"
-                  placeholder="HR Specialist"
-                  value={newUser.position}
-                  onChange={(e) => setNewUser({ ...newUser, position: e.target.value })}
-                />
-              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="userLevel">User Level *</Label>
+                <Label htmlFor="role">Role *</Label>
                 <Select
-                  value={newUser.userLevel}
-                  onValueChange={(value: UserLevel) => setNewUser({ ...newUser, userLevel: value })}
+                  value={newUser.role}
+                  onValueChange={(value: UserRole) => setNewUser({ ...newUser, role: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -470,22 +381,6 @@ export default function AdminEmployees() {
                     <SelectItem value="employee">Employee</SelectItem>
                     <SelectItem value="hr">HR</SelectItem>
                     <SelectItem value="admin">ADMIN</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status *</Label>
-                <Select
-                  value={newUser.status}
-                  onValueChange={(value: UserStatus) => setNewUser({ ...newUser, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="on-leave">On Leave</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
