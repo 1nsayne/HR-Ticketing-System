@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { DarkModeToggle } from "../../components/DarkModeToggle";
 import { User } from "../../data/mockData";
-import { getUserData, getUserRole, loginWithEmailPassword, type UserRole } from "../../../services/authService";
+import { getUserData, loginWithEmailPassword, type UserRole } from "../../../services/authService";
 import logo from "../../../assets/logo.png";
 import "../../../styles/login.css";
 
@@ -87,12 +87,9 @@ export default function LoginPage() {
 
     try {
       const firebaseUser = await loginWithEmailPassword(email, password);
-      const [userData, fetchedRole] = await Promise.all([
-        getUserData(firebaseUser.uid),
-        getUserRole(firebaseUser.uid),
-      ]);
+      const userData = await getUserData(firebaseUser.uid, firebaseUser.email);
 
-      const resolvedRole = fetchedRole ?? userData?.role ?? "employee";
+      const resolvedRole = userData?.role ?? "employee";
       const displayName =
         email
           .split("@")[0]

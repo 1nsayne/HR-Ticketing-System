@@ -6,9 +6,20 @@ import { UserRole } from '../../services/authService';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles: UserRole[];
+  redirectToRoleHome?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+const getRouteForRole = (role: UserRole) => {
+  if (role === 'admin') return '/admin';
+  if (role === 'hr') return '/hr';
+  return '/employee';
+};
+
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  allowedRoles,
+  redirectToRoleHome = false,
+}) => {
   const { role, loading, isAuthenticated } = useAuth();
 
   if (loading) {
@@ -23,7 +34,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
   }
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!allowedRoles.includes(role)) return <Navigate to="/unauthorized" replace />;
+  if (!allowedRoles.includes(role)) {
+    if (redirectToRoleHome) {
+      return <Navigate to={getRouteForRole(role)} replace />;
+    }
+
+    return <Navigate to="/unauthorized" replace />;
+  }
 
   return <>{children}</>;
 };

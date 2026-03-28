@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '../lib/firebase';
-import { getUserRole, UserRole } from '../services/authService';
+import { getUserData, UserRole } from '../services/authService';
 
 interface AuthState {
   user: User | null;
@@ -31,9 +31,9 @@ export const useAuth = () => {
   /**
    * Fetch user's role from Firestore
    */
-  const fetchUserRole = useCallback(async (uid: string) => {
+  const fetchUserRole = useCallback(async (uid: string, email?: string | null) => {
     try {
-      const userRole = await getUserRole(uid);
+      const userRole = (await getUserData(uid, email))?.role ?? null;
       setState((prevState) => ({
         ...prevState,
         role: userRole,
@@ -66,7 +66,7 @@ export const useAuth = () => {
           }));
 
           // Fetch their role from Firestore
-          await fetchUserRole(user.uid);
+          await fetchUserRole(user.uid, user.email);
         } else {
           // User is logged out
           setState({

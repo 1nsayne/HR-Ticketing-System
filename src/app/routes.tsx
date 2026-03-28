@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
   {
     path: "/employee",
     element: (
-      <ProtectedRoute allowedRoles={["employee", "hr", "admin"]}>
+      <ProtectedRoute allowedRoles={["employee"]} redirectToRoleHome>
         <EmployeeDashboard />
       </ProtectedRoute>
     ),
@@ -30,7 +30,7 @@ export const router = createBrowserRouter([
   {
     path: "/employee/create-ticket",
     element: (
-      <ProtectedRoute allowedRoles={["employee", "hr", "admin"]}>
+      <ProtectedRoute allowedRoles={["employee"]} redirectToRoleHome>
         <CreateTicket />
       </ProtectedRoute>
     ),
@@ -38,7 +38,7 @@ export const router = createBrowserRouter([
   {
     path: "/hr",
     element: (
-      <ProtectedRoute allowedRoles={["hr", "admin"]}>
+      <ProtectedRoute allowedRoles={["hr"]} redirectToRoleHome>
         <HRPage />
       </ProtectedRoute>
     ),

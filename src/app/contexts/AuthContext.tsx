@@ -12,9 +12,10 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import {
   clearBrowserCloseTimestamp,
+  clearPendingTimedOutSignIn,
   getAuthToken,
   getUserData,
-  getUserRole,
+  hasPendingTimedOutSignIn,
   logout as firebaseLogout,
   markBrowserCloseTimestamp,
   shouldReauthenticateAfterBrowserClose,
@@ -148,19 +149,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
 
       try {
+        if (hasPendingTimedOutSignIn()) {
+          clearPendingTimedOutSignIn();
+          await firebaseLogout();
+          return;
+        }
+
         if (shouldReauthenticateAfterBrowserClose()) {
           sessionStorage.setItem(BROWSER_CLOSE_EXPIRED_STORAGE_KEY, "1");
           await firebaseLogout();
           return;
         }
 
-        const [userData, fetchedRole] = await Promise.all([
-          getUserData(firebaseUser.uid),
-          getUserRole(firebaseUser.uid),
-        ]);
+        const userData = await getUserData(firebaseUser.uid, firebaseUser.email);
         const authToken = await getAuthToken();
 
-        const resolvedRole = (fetchedRole ?? userData?.role ?? "employee") as UserRole;
+        const resolvedRole = (userData?.role ?? "employee") as UserRole;
         const hydratedUser: User = {
           ...createFallbackUser(firebaseUser.email, firebaseUser.uid, resolvedRole),
           ...(userData

@@ -10,8 +10,18 @@ import {
   signOut,
   User,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  where,
+} from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
+import { mockUsers } from '../app/data/mockData';
+import { sharedUserData } from '../shared/sharedUserData.js';
 
 export type UserRole = 'admin' | 'hr' | 'employee';
 
@@ -31,6 +41,8 @@ const BROWSER_CLOSE_REAUTH_MS =
     ? configuredBrowserCloseReauth
     : DEFAULT_BROWSER_CLOSE_REAUTH_MS;
 const BROWSER_CLOSE_TIMESTAMP_STORAGE_KEY = 'auth:closed-at';
+const SIGN_IN_TIMEOUT_PENDING_STORAGE_KEY = 'auth:sign-in-timeout-pending';
+const USER_COLLECTION_CANDIDATES = ['users', 'user'] as const;
 
 /**
  * User data from Firestore
@@ -41,6 +53,164 @@ export interface FirebaseUser {
   role: UserRole;
   createdAt?: string;
 }
+
+type FirestoreUserRecord = Partial<FirebaseUser> & {
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+};
+
+const normalizeUserRole = (value: unknown): UserRole | null => {
+  if (value === 'admin' || value === 'hr' || value === 'employee') {
+    return value;
+  }
+
+  return null;
+};
+
+const DEMO_ROLE_BY_EMAIL: Record<string, UserRole> = {
+  'admin@company.com': 'admin',
+  'hr@company.com': 'hr',
+  'employee@company.com': 'employee',
+  ...Object.fromEntries(
+    [...mockUsers, ...sharedUserData].flatMap((user) => {
+      const email =
+        typeof user.email === 'string' ? user.email.trim().toLowerCase() : '';
+      const role = normalizeUserRole(user.role);
+
+      if (!email || !role) return [];
+
+      return [[email, role] as const];
+    })
+  ),
+};
+
+const resolveRoleFromEmail = (email?: string | null): UserRole | null => {
+  if (!email) return null;
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const knownRole = DEMO_ROLE_BY_EMAIL[normalizedEmail];
+
+  if (knownRole) return knownRole;
+
+  const localPart = normalizedEmail.split('@')[0] || '';
+
+  if (localPart.includes('admin')) return 'admin';
+  if (/^hr([._-]|$)/.test(localPart) || localPart.includes('humanresources')) {
+    return 'hr';
+  }
+
+  return null;
+};
+
+const createEmailFallbackUser = (
+  uid: string,
+  email?: string | null
+): FirebaseUser | null => {
+  if (!email) return null;
+
+  const role = resolveRoleFromEmail(email);
+
+  if (!role) return null;
+
+  return {
+    uid,
+    email,
+    role,
+  };
+};
+
+const toFirebaseUser = (
+  data: FirestoreUserRecord | undefined,
+  fallback: { uid: string; email?: string | null }
+): FirebaseUser | null => {
+  if (!data) return null;
+
+  const role = normalizeUserRole(data.role);
+
+  if (!role) return null;
+
+  return {
+    uid: data.uid || fallback.uid,
+    email: data.email || fallback.email || '',
+    role,
+    createdAt: data.createdAt,
+  };
+};
+
+const findUserRecordByIdentity = async (
+  uid: string,
+  email?: string | null
+): Promise<FirebaseUser | null> => {
+  for (const collectionName of USER_COLLECTION_CANDIDATES) {
+    try {
+      const userDocSnap = await getDoc(doc(db, collectionName, uid));
+
+      if (userDocSnap.exists()) {
+        const resolvedUser = toFirebaseUser(
+          userDocSnap.data() as FirestoreUserRecord,
+          { uid, email }
+        );
+
+        if (resolvedUser) return resolvedUser;
+      }
+    } catch {
+      // Some Firebase projects deny direct reads here. Continue to the next fallback.
+    }
+  }
+
+  for (const collectionName of USER_COLLECTION_CANDIDATES) {
+    try {
+      const userQuery = query(
+        collection(db, collectionName),
+        where('uid', '==', uid),
+        limit(1)
+      );
+      const userQuerySnapshot = await getDocs(userQuery);
+
+      if (!userQuerySnapshot.empty) {
+        const resolvedUser = toFirebaseUser(
+          userQuerySnapshot.docs[0].data() as FirestoreUserRecord,
+          { uid, email }
+        );
+
+        if (resolvedUser) return resolvedUser;
+      }
+    } catch {
+      // Some Firebase projects deny collection queries here. Continue to the next fallback.
+    }
+  }
+
+  if (!email) return null;
+
+  const emailCandidates = Array.from(new Set([email, email.toLowerCase()]));
+
+  for (const collectionName of USER_COLLECTION_CANDIDATES) {
+    for (const candidateEmail of emailCandidates) {
+      try {
+        const userQuery = query(
+          collection(db, collectionName),
+          where('email', '==', candidateEmail),
+          limit(1)
+        );
+        const userQuerySnapshot = await getDocs(userQuery);
+
+        if (!userQuerySnapshot.empty) {
+          const resolvedUser = toFirebaseUser(
+            userQuerySnapshot.docs[0].data() as FirestoreUserRecord,
+            { uid, email: candidateEmail }
+          );
+
+          if (resolvedUser) return resolvedUser;
+        }
+      } catch {
+        // Fall through to local/demo role resolution when Firestore blocks email queries.
+      }
+    }
+  }
+
+  return createEmailFallbackUser(uid, email);
+};
 
 /**
  * Sign in with email and password
@@ -54,6 +224,8 @@ export const loginWithEmailPassword = async (
   password: string
 ): Promise<User> => {
   let didTimeout = false;
+
+  clearPendingTimedOutSignIn();
 
   try {
     const signInAttempt = (async () => {
@@ -76,14 +248,21 @@ export const loginWithEmailPassword = async (
       new Promise<never>((_, reject) => {
         window.setTimeout(() => {
           didTimeout = true;
+          markPendingTimedOutSignIn();
           reject(new Error('auth/sign-in-timeout'));
         }, SIGN_IN_TIMEOUT_MS);
       }),
     ]);
 
+    clearPendingTimedOutSignIn();
     return userCredential.user;
   } catch (error: any) {
     const errorCode = error?.code || error?.message;
+
+    if (errorCode !== 'auth/sign-in-timeout') {
+      clearPendingTimedOutSignIn();
+    }
+
     const errorMessage = mapAuthError(errorCode);
     throw new Error(errorMessage);
   }
@@ -108,6 +287,18 @@ export const markBrowserCloseTimestamp = (): void => {
 
 export const clearBrowserCloseTimestamp = (): void => {
   localStorage.removeItem(BROWSER_CLOSE_TIMESTAMP_STORAGE_KEY);
+};
+
+const markPendingTimedOutSignIn = (): void => {
+  sessionStorage.setItem(SIGN_IN_TIMEOUT_PENDING_STORAGE_KEY, '1');
+};
+
+export const clearPendingTimedOutSignIn = (): void => {
+  sessionStorage.removeItem(SIGN_IN_TIMEOUT_PENDING_STORAGE_KEY);
+};
+
+export const hasPendingTimedOutSignIn = (): boolean => {
+  return sessionStorage.getItem(SIGN_IN_TIMEOUT_PENDING_STORAGE_KEY) === '1';
 };
 
 export const shouldReauthenticateAfterBrowserClose = (): boolean => {
@@ -152,43 +343,39 @@ export const getAuthToken = async (forceRefresh = false): Promise<string | null>
 /**
  * Get the role of a user from Firestore
  * @param uid User ID
+ * @param email Optional email used as a fallback lookup key
  * @returns The user's role or null if not found
  * @throws Error if fetching role fails
  */
-export const getUserRole = async (uid: string): Promise<UserRole | null> => {
+export const getUserRole = async (
+  uid: string,
+  email?: string | null
+): Promise<UserRole | null> => {
   try {
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (userDocSnap.exists()) {
-      const data = userDocSnap.data() as FirebaseUser;
-      return data.role || null;
-    }
-    return null;
+    const userData = await findUserRecordByIdentity(uid, email);
+    return userData?.role || null;
   } catch (error: any) {
     console.error(`Failed to fetch user role for ${uid}:`, error.message);
-    return null;
+    return createEmailFallbackUser(uid, email)?.role || null;
   }
 };
 
 /**
  * Get full user data from Firestore
  * @param uid User ID
+ * @param email Optional email used as a fallback lookup key
  * @returns The user's Firestore document or null if not found
  * @throws Error if fetching user data fails
  */
-export const getUserData = async (uid: string): Promise<FirebaseUser | null> => {
+export const getUserData = async (
+  uid: string,
+  email?: string | null
+): Promise<FirebaseUser | null> => {
   try {
-    const userDocRef = doc(db, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (userDocSnap.exists()) {
-      return userDocSnap.data() as FirebaseUser;
-    }
-    return null;
+    return await findUserRecordByIdentity(uid, email);
   } catch (error: any) {
     console.error(`Failed to fetch user data for ${uid}:`, error.message);
-    return null;
+    return createEmailFallbackUser(uid, email);
   }
 };
 
